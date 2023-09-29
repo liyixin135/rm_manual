@@ -69,7 +69,7 @@ void ChassisGimbalShooterManual::run()
 {
   ChassisGimbalManual::run();
   shooter_calibration_->update(ros::Time::now());
-  gimbal_calibration_->update(ros::Time::now());
+  gimbal_calibration_->update(ros::Time::now(), false);
 }
 
 void ChassisGimbalShooterManual::checkReferee()
