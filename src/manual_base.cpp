@@ -75,6 +75,7 @@ void ManualBase::checkReferee()
 {
   gimbal_power_on_event_.update(gimbal_output_on_);
   shooter_power_on_event_.update(shooter_output_on_);
+  // 用referee_is_online_判断裁判端串口是否掉了
   referee_is_online_ = (ros::Time::now() - referee_last_get_stamp_ < ros::Duration(0.3));
   manual_to_referee_pub_.publish(manual_to_referee_pub_data_);
 }
@@ -145,6 +146,7 @@ void ManualBase::trackCallback(const rm_msgs::TrackData::ConstPtr& data)
   track_data_ = *data;
 }
 
+// 从裁判端读话题数据，赋值给
 void ManualBase::gameRobotStatusCallback(const rm_msgs::GameRobotStatus::ConstPtr& data)
 {
   robot_id_ = data->robot_id;

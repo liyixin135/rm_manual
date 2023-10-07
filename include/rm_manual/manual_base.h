@@ -49,6 +49,7 @@ public:
     RC,
     PC
   };
+  // 虚函数，各兵种子类会重写这个函数
   virtual void run();
 
 protected:
