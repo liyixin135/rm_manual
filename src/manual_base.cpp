@@ -67,7 +67,9 @@ ManualBase::ManualBase(ros::NodeHandle& nh, ros::NodeHandle& nh_referee)
 
 void ManualBase::run()
 {
+  // 检查裁判系统
   checkReferee();
+  // controller_manager_来自rm_common::ControllerManager
   controller_manager_.update();
 }
 

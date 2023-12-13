@@ -16,11 +16,13 @@ ChassisGimbalShooterManual::ChassisGimbalShooterManual(ros::NodeHandle& nh, ros:
     ros::NodeHandle camera_nh(nh, "camera");
     camera_switch_cmd_sender_ = new rm_common::CameraSwitchCommandSender(camera_nh);
   }
+  // roll电机，位置控制
   if (nh.hasParam("scope"))
   {
     ros::NodeHandle scope_nh(nh, "scope");
     scope_cmd_sender_ = new rm_common::JointPositionBinaryCommandSender(scope_nh);
   }
+  // 3508图传电机，只有英雄能从参数文件拿到，图传电机是位置控制器
   if (nh.hasParam("image_transmission"))
   {
     ros::NodeHandle image_transmission_nh(nh, "image_transmission");

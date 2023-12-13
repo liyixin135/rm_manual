@@ -14,8 +14,10 @@ int main(int argc, char** argv)
   rm_manual::ManualBase* manual_control;
   // 节点初始化
   ros::init(argc, argv, "rm_manual");
+  // 定义两个不同命名空间的节点句柄
   ros::NodeHandle nh("~");
   ros::NodeHandle nh_referee("rm_referee");
+  // 拿机器人兵种
   robot = getParam(nh, "robot_type", (std::string) "error");
   // 根据不同的robot_type选择不同的函数
   if (robot == "standard")
