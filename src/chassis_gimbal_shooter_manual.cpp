@@ -365,8 +365,10 @@ void ChassisGimbalShooterManual::mouseRightPress()
 void ChassisGimbalShooterManual::ePress()
 {
   switch_armor_target_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_OUTPOST_BASE);
+  // 跳转e键
   switch_armor_target_srv_->callService();
   shooter_cmd_sender_->setArmorType(switch_armor_target_srv_->getArmorTarget());
+  // 按e可以更新
 }
 
 void ChassisGimbalShooterManual::eRelease()
