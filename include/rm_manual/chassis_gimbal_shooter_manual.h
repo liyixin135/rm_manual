@@ -52,7 +52,7 @@ protected:
   void trackCallback(const rm_msgs::TrackData::ConstPtr& data) override;
   void leftSwitchUpOn(ros::Duration duration);
   void mouseLeftPress();
-  void mouseLeftRelease()
+  void mouseLeftRelease()  // 松开左键，prepare_shoot_标志位变成true
   {
     shooter_cmd_sender_->setMode(rm_msgs::ShootCmd::READY);
     prepare_shoot_ = true;
@@ -87,15 +87,15 @@ protected:
   virtual void xReleasing();
   virtual void shiftPress();
   virtual void shiftRelease();
-  void qPress()
+  void qPress()//按q打弹hz进入BURST
   {
     shooter_cmd_sender_->setShootFrequency(rm_common::HeatLimit::BURST);
   }
-  void qRelease()
+  void qRelease()//q松开打弹hz进入LOW
   {
     shooter_cmd_sender_->setShootFrequency(rm_common::HeatLimit::LOW);
   }
-  void fPress()
+  void fPress()//f shooter进入stop
   {
     shooter_cmd_sender_->setMode(rm_msgs::ShootCmd::STOP);
   }

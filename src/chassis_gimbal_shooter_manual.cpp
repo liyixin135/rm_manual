@@ -329,69 +329,69 @@ void ChassisGimbalShooterManual::leftSwitchUpOn(ros::Duration duration)
     shooter_cmd_sender_->setMode(rm_msgs::ShootCmd::READY);
 }
 
-void ChassisGimbalShooterManual::mouseLeftPress()
+void ChassisGimbalShooterManual::mouseLeftPress()  // 鼠标左键
 {
   if (shooter_cmd_sender_->getMsg()->mode == rm_msgs::ShootCmd::STOP)
   {
+    // stop状态下变成ready
     shooter_cmd_sender_->setMode(rm_msgs::ShootCmd::READY);
     prepare_shoot_ = false;
   }
-  if (prepare_shoot_)
+  if (prepare_shoot_)  // ready状态下变成push
   {
     shooter_cmd_sender_->setMode(rm_msgs::ShootCmd::PUSH);
-    shooter_cmd_sender_->checkError(ros::Time::now());
+    shooter_cmd_sender_->checkError(ros::Time::now());//检测是否为前哨站模式
   }
 }
 
+//鼠标右键
 void ChassisGimbalShooterManual::mouseRightPress()
 {
   if (track_data_.id == 0)
-    gimbal_cmd_sender_->setMode(rm_msgs::GimbalCmd::RATE);
+    gimbal_cmd_sender_->setMode(rm_msgs::GimbalCmd::RATE);//瞄不到就还能控
   else
   {
-    gimbal_cmd_sender_->setMode(rm_msgs::GimbalCmd::TRACK);
-    gimbal_cmd_sender_->setBulletSpeed(shooter_cmd_sender_->getSpeed());
+    gimbal_cmd_sender_->setMode(rm_msgs::GimbalCmd::TRACK);//瞄到了就进入track模式
+    gimbal_cmd_sender_->setBulletSpeed(shooter_cmd_sender_->getSpeed());//去参数文件拿弹速放到gimbal_controller里面的弹道解算
   }
-  if (switch_armor_target_srv_->getArmorTarget() == rm_msgs::StatusChangeRequest::ARMOR_OUTPOST_BASE)
+  if (switch_armor_target_srv_->getArmorTarget() == rm_msgs::StatusChangeRequest::ARMOR_OUTPOST_BASE)//如果是前哨站模式
   {
-    if (shooter_cmd_sender_->getMsg()->mode != rm_msgs::ShootCmd::STOP)
+    if (shooter_cmd_sender_->getMsg()->mode != rm_msgs::ShootCmd::STOP)//如果不是stop模式下
     {
-      shooter_cmd_sender_->setMode(rm_msgs::ShootCmd::PUSH);
-      shooter_cmd_sender_->checkError(ros::Time::now());
+      shooter_cmd_sender_->setMode(rm_msgs::ShootCmd::PUSH);//变成push模式
+      shooter_cmd_sender_->checkError(ros::Time::now());//等待开火指令
     }
   }
 }
 
-void ChassisGimbalShooterManual::ePress()
+void ChassisGimbalShooterManual::ePress()//按e键进入前哨站模式
 {
   switch_armor_target_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_OUTPOST_BASE);
-  // 跳转e键
   switch_armor_target_srv_->callService();
   shooter_cmd_sender_->setArmorType(switch_armor_target_srv_->getArmorTarget());
-  // 按e可以更新
 }
 
-void ChassisGimbalShooterManual::eRelease()
+void ChassisGimbalShooterManual::eRelease()//放开e键变回平时的自瞄模式
 {
   switch_armor_target_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_ALL);
   switch_armor_target_srv_->callService();
   shooter_cmd_sender_->setArmorType(switch_armor_target_srv_->getArmorTarget());
 }
 
-void ChassisGimbalShooterManual::cPress()
+void ChassisGimbalShooterManual::cPress()//按c键
 {
-  if (is_gyro_)
+  if (is_gyro_)//如果正在小陀螺
   {
-    chassis_cmd_sender_->setMode(rm_msgs::ChassisCmd::FOLLOW);
-    vel_cmd_sender_->setAngularZVel(0.0);
-    is_gyro_ = false;
+    chassis_cmd_sender_->setMode(rm_msgs::ChassisCmd::FOLLOW);//底盘跟随云台
+    vel_cmd_sender_->setAngularZVel(0.0);//头不动
+    is_gyro_ = false;//结束小陀螺
   }
   else
   {
-    chassis_cmd_sender_->setMode(rm_msgs::ChassisCmd::RAW);
-    is_gyro_ = true;
-    chassis_cmd_sender_->power_limit_->updateState(rm_common::PowerLimit::NORMAL);
-    if (x_scale_ != 0.0 || y_scale_ != 0.0)
+    chassis_cmd_sender_->setMode(rm_msgs::ChassisCmd::RAW);//如果不在小陀螺，就变成分开能控模式
+    is_gyro_ = true;//小陀螺标志位变成true
+    chassis_cmd_sender_->power_limit_->updateState(rm_common::PowerLimit::NORMAL);//底盘用normal
+    if (x_scale_ != 0.0 || y_scale_ != 0.0)//底盘在动
       vel_cmd_sender_->setAngularZVel(gyro_rotate_reduction_);
     else
       vel_cmd_sender_->setAngularZVel(1.0);
@@ -420,7 +420,7 @@ void ChassisGimbalShooterManual::rPress()
   }
 }
 
-void ChassisGimbalShooterManual::gPress()
+void ChassisGimbalShooterManual::gPress()//g摩擦轮降5
 {
   shooter_cmd_sender_->dropSpeed();
 }
@@ -477,45 +477,45 @@ void ChassisGimbalShooterManual::dPress()
   }
 }
 
-void ChassisGimbalShooterManual::wRelease()
+void ChassisGimbalShooterManual::wRelease()//停止前进
 {
   ChassisGimbalManual::wRelease();
   vel_cmd_sender_->setAngularZVel(is_gyro_ ? 1 : 0);
 }
-void ChassisGimbalShooterManual::aRelease()
+void ChassisGimbalShooterManual::aRelease()//停止左进
 {
   ChassisGimbalManual::aRelease();
   vel_cmd_sender_->setAngularZVel(is_gyro_ ? 1 : 0);
 }
-void ChassisGimbalShooterManual::sRelease()
+void ChassisGimbalShooterManual::sRelease()//停止后退
 {
   ChassisGimbalManual::sRelease();
   vel_cmd_sender_->setAngularZVel(is_gyro_ ? 1 : 0);
 }
-void ChassisGimbalShooterManual::dRelease()
+void ChassisGimbalShooterManual::dRelease()//停止右进
 {
   ChassisGimbalManual::dRelease();
   vel_cmd_sender_->setAngularZVel(is_gyro_ ? 1 : 0);
 }
-void ChassisGimbalShooterManual::wPressing()
+void ChassisGimbalShooterManual::wPressing()//前进
 {
   ChassisGimbalManual::wPressing();
   vel_cmd_sender_->setAngularZVel(is_gyro_ ? gyro_rotate_reduction_ : 0);
 }
 
-void ChassisGimbalShooterManual::aPressing()
+void ChassisGimbalShooterManual::aPressing()//左进
 {
   ChassisGimbalManual::aPressing();
   vel_cmd_sender_->setAngularZVel(is_gyro_ ? gyro_rotate_reduction_ : 0);
 }
 
-void ChassisGimbalShooterManual::sPressing()
+void ChassisGimbalShooterManual::sPressing()//后退
 {
   ChassisGimbalManual::sPressing();
   vel_cmd_sender_->setAngularZVel(is_gyro_ ? gyro_rotate_reduction_ : 0);
 }
 
-void ChassisGimbalShooterManual::dPressing()
+void ChassisGimbalShooterManual::dPressing()//右进
 {
   ChassisGimbalManual::dPressing();
   vel_cmd_sender_->setAngularZVel(is_gyro_ ? gyro_rotate_reduction_ : 0);
@@ -558,23 +558,24 @@ void ChassisGimbalShooterManual::xReleasing()
   }
 }
 
-void ChassisGimbalShooterManual::vPress()
+void ChassisGimbalShooterManual::vPress()//按v摩擦轮都提高5
 {
   shooter_cmd_sender_->raiseSpeed();
 }
 
-void ChassisGimbalShooterManual::shiftPress()
+void ChassisGimbalShooterManual::shiftPress()//长按shift
 {
-  if (chassis_cmd_sender_->getMsg()->mode != rm_msgs::ChassisCmd::FOLLOW)
+  if (chassis_cmd_sender_->getMsg()->mode != rm_msgs::ChassisCmd::FOLLOW)//如果不是follow
   {
-    chassis_cmd_sender_->setMode(rm_msgs::ChassisCmd::FOLLOW);
-    vel_cmd_sender_->setAngularZVel(0.);
+    chassis_cmd_sender_->setMode(rm_msgs::ChassisCmd::FOLLOW);//变成follow
+    vel_cmd_sender_->setAngularZVel(0.);//头不动
   }
-  chassis_cmd_sender_->power_limit_->updateState(rm_common::PowerLimit::BURST);
+  chassis_cmd_sender_->power_limit_->updateState(rm_common::PowerLimit::BURST);//底盘功率变成burst
 }
 
-void ChassisGimbalShooterManual::shiftRelease()
+void ChassisGimbalShooterManual::shiftRelease()//松开shift
 {
+  //如果在raw状态下
   if (chassis_cmd_sender_->getMsg()->mode == rm_msgs::ChassisCmd::RAW ||
       std::sqrt(std::pow(vel_cmd_sender_->getMsg()->linear.x, 2) + std::pow(vel_cmd_sender_->getMsg()->linear.y, 2)) >
           0.0)
@@ -583,7 +584,7 @@ void ChassisGimbalShooterManual::shiftRelease()
     chassis_cmd_sender_->power_limit_->updateState(rm_common::PowerLimit::CHARGE);
 }
 
-void ChassisGimbalShooterManual::ctrlVPress()
+void ChassisGimbalShooterManual::ctrlVPress()//hz不是low进入low，是low变成high
 {
   if (shooter_cmd_sender_->getShootFrequency() != rm_common::HeatLimit::LOW)
     shooter_cmd_sender_->setShootFrequency(rm_common::HeatLimit::LOW);
@@ -603,7 +604,7 @@ void ChassisGimbalShooterManual::ctrlBPress()
   switch_detection_srv_->callService();
 }
 
-void ChassisGimbalShooterManual::ctrlQPress()
+void ChassisGimbalShooterManual::ctrlQPress()//ctrlq 拨盘校准，云台校准
 {
   shooter_calibration_->reset();
   gimbal_calibration_->reset();
