@@ -38,7 +38,7 @@ public:
   }
   void setEdge(boost::function<void()> rising_handler, boost::function<void()> falling_handler)
   {
-    rising_handler_ = std::move(rising_handler);
+    rising_handler_ = std::move(rising_handler);  // std::move将一个左值转换成右值引用
     falling_handler_ = std::move(falling_handler);
   }
   void setActive(boost::function<void(ros::Duration)> high_handler, boost::function<void(ros::Duration)> low_handler)
@@ -58,6 +58,7 @@ public:
   }
   void update(bool state)
   {
+    // 如果状态变化
     if (state != last_state_)
     {
       if (state && rising_handler_)

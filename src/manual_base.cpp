@@ -47,6 +47,9 @@ ManualBase::ManualBase(ros::NodeHandle& nh, ros::NodeHandle& nh_referee)
                                  boost::bind(&ManualBase::leftSwitchMidFall, this));
   robot_hp_event_.setEdge(boost::bind(&ManualBase::robotRevive, this), boost::bind(&ManualBase::robotDie, this));
 
+  // 拿参，拿不到就报错，参数文件在config_manual里面，实际就是校准队列，  chassis_calibrate_motor: [ ]
+  //    gimbal_calibrate_motor: [ "scope_joint_motor", "image_transmission_joint_motor" ]
+  //    shooter_calibrate_motor: [ "trigger_joint_motor" ]
   XmlRpc::XmlRpcValue xml;
   if (!nh.getParam("chassis_calibrate_motor", xml))
     ROS_ERROR("chassis_calibrate_motor no defined (namespace: %s)", nh.getNamespace().c_str());
@@ -148,7 +151,7 @@ void ManualBase::trackCallback(const rm_msgs::TrackData::ConstPtr& data)
   track_data_ = *data;
 }
 
-// 从裁判端读话题数据，赋值给
+// 从裁判端读话题数据，赋值给底盘，云台，发射机构是否在线
 void ManualBase::gameRobotStatusCallback(const rm_msgs::GameRobotStatus::ConstPtr& data)
 {
   robot_id_ = data->robot_id;
