@@ -158,21 +158,21 @@ void ChassisGimbalShooterManual::sendCommand(const ros::Time& time)
   shooter_cmd_sender_->sendCommand(time);
   if (camera_switch_cmd_sender_)
     camera_switch_cmd_sender_->sendCommand(time);
-  if (scope_cmd_sender_)
-  {
-    if (!use_scope_)
+  if (scope_cmd_sender_)  // scope_cmd_sender_是位置控制器
+  {                       // use_scope_是roll电机开关的标志位
+    if (!use_scope_)      // use_scope_否，roll电机就挪开
       scope_cmd_sender_->off();
     else
-      scope_cmd_sender_->on();
-    scope_cmd_sender_->sendCommand(time);
+      scope_cmd_sender_->on();             // use_scope_是，roll电机就扣上
+    scope_cmd_sender_->sendCommand(time);  // 发布roll电机命令的话题
   }
-  if (image_transmission_cmd_sender_)
-  {
-    if (!adjust_image_transmission_)
+  if (image_transmission_cmd_sender_)  // image_transmission_cmd_sender_是位置控制器
+  {                                    // adjust_image_transmission_是3508图传电机的标志位
+    if (!adjust_image_transmission_)   // adjust_image_transmission_否，3508图传电机抬头
       image_transmission_cmd_sender_->off();
     else
-      image_transmission_cmd_sender_->on();
-    image_transmission_cmd_sender_->sendCommand(time);
+      image_transmission_cmd_sender_->on();             // adjust_image_transmission_是，3508图传电机低头
+    image_transmission_cmd_sender_->sendCommand(time);  // 发布3508图传电机命令的话题
   }
 }
 
@@ -403,10 +403,11 @@ void ChassisGimbalShooterManual::bPress()
   chassis_cmd_sender_->power_limit_->updateState(rm_common::PowerLimit::CHARGE);
 }
 
-void ChassisGimbalShooterManual::rPress()
+void ChassisGimbalShooterManual::rPress()  // 按下r
 {
   if (camera_switch_cmd_sender_)
-    camera_switch_cmd_sender_->switchCamera();
+    camera_switch_cmd_sender_
+        ->switchCamera();  // msg_.data = msg_.data == camera1_name_ ? camera2_name_ : camera1_name_;
   if (scope_cmd_sender_)
   {
     use_scope_ = !scope_cmd_sender_->getState();
