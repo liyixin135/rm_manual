@@ -406,17 +406,17 @@ void ChassisGimbalShooterManual::bPress()
 void ChassisGimbalShooterManual::rPress()  // 按下r
 {
   if (camera_switch_cmd_sender_)
-    camera_switch_cmd_sender_
-        ->switchCamera();  // msg_.data = msg_.data == camera1_name_ ? camera2_name_ : camera1_name_;
+    camera_switch_cmd_sender_->switchCamera();
+  // switchCamera()函数里面，msg_.data = msg_.data == camera1_name_ ? camera2_name_ : camera1_name_;为了切换相机光心坐标系写的
   if (scope_cmd_sender_)
   {
-    use_scope_ = !scope_cmd_sender_->getState();
+    use_scope_ = !scope_cmd_sender_->getState();  // use_scope_标志位取反
     if (use_scope_)
-      gimbal_cmd_sender_->setEject(true);
+      gimbal_cmd_sender_->setEject(true);  // 可能是该云台响应速度的，感觉是用了八倍镜需要降低灵敏度
     else
     {
-      gimbal_cmd_sender_->setEject(false);
-      adjust_image_transmission_ = false;
+      gimbal_cmd_sender_->setEject(false);  // 应该是恢复灵敏度
+      adjust_image_transmission_ = false;   //
     }
   }
 }
@@ -593,9 +593,9 @@ void ChassisGimbalShooterManual::ctrlVPress()//hz不是low进入low，是low变�
     shooter_cmd_sender_->setShootFrequency(rm_common::HeatLimit::HIGH);
 }
 
-void ChassisGimbalShooterManual::ctrlRPress()
+void ChassisGimbalShooterManual::ctrlRPress()  // 按下ctrl+r
 {
-  if (image_transmission_cmd_sender_)
+  if (image_transmission_cmd_sender_)  // 更改image_transmission_cmd_sender_标志位
     adjust_image_transmission_ = !image_transmission_cmd_sender_->getState();
 }
 
