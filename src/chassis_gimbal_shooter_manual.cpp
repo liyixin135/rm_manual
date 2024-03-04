@@ -244,7 +244,7 @@ void ChassisGimbalShooterManual::updateRc(const rm_msgs::DbusData::ConstPtr& dbu
   vel_cmd_sender_->setLinearYVel(is_gyro_ ? -dbus_data->ch_r_x * gyro_move_reduction_ : -dbus_data->ch_r_x);
 
   if (shooter_cmd_sender_->getMsg()->mode != rm_msgs::ShootCmd::STOP)
-    gimbal_cmd_sender_->setBulletSpeed(shooter_cmd_sender_->getSpeed());
+    gimbal_cmd_sender_->setBulletSpeed(shooter_cmd_sender_->getSpeed());  // 从shooter读取bullet_speed
 }
 
 void ChassisGimbalShooterManual::updatePc(const rm_msgs::DbusData::ConstPtr& dbus_data)
