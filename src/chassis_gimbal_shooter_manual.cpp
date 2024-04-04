@@ -141,7 +141,7 @@ void ChassisGimbalShooterManual::gimbalDesErrorCallback(const rm_msgs::GimbalDes
 
 void ChassisGimbalShooterManual::allowShootCallback(const rm_msgs::GimbalDesError::ConstPtr& data)
 {
-  ChassisGimbalManual::gimbalDesErrorCallback(data);
+  ChassisGimbalManual::allowShootCallback(data);
   shooter_cmd_sender_->updateAllowShoot(*data);
 }
 
