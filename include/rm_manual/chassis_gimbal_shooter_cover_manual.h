@@ -29,7 +29,7 @@ protected:
   void rightSwitchUpRise() override;
   void rPress() override;
   void ePress() override;
-  void zPressing();
+  void zPressing() override;
   void zRelease();
   void wPress() override;
   void wPressing() override;
@@ -45,7 +45,7 @@ protected:
   rm_common::SwitchDetectionCaller* switch_buff_type_srv_{};
   rm_common::SwitchDetectionCaller* switch_exposure_srv_{};
   rm_common::JointPositionBinaryCommandSender* cover_command_sender_{};
-  InputEvent ctrl_z_event_, ctrl_q_event_, x_event_, z_event_;
+  InputEvent ctrl_z_event_, ctrl_q_event_, x_event_;
   std::string supply_frame_;
   ros::Time last_switch_time_;
   bool supply_ = false;
