@@ -378,8 +378,9 @@ void ChassisGimbalShooterManual::ePress()
   switch_armor_target_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_OUTPOST_BASE);
   switch_armor_target_srv_->callService();
   switch_detection_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_OUTPOST_BASE);
-  switch_detection_srv_->callService();
-  shooter_cmd_sender_->setArmorType(switch_detection_srv_->getArmorTarget());
+  std::string robot_color = robot_id_ >= 100 ? "blue" : "red";
+  switch_detection_srv_->setEnemyColor(robot_id_, robot_color);
+  shooter_cmd_sender_->setArmorType(switch_armor_target_srv_->getArmorTarget());
 }
 
 void ChassisGimbalShooterManual::eRelease()
