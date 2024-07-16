@@ -377,14 +377,18 @@ void ChassisGimbalShooterManual::ePress()
 {
   switch_armor_target_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_OUTPOST_BASE);
   switch_armor_target_srv_->callService();
-  shooter_cmd_sender_->setArmorType(switch_armor_target_srv_->getArmorTarget());
+  switch_detection_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_OUTPOST_BASE);
+  switch_detection_srv_->callService();
+  shooter_cmd_sender_->setArmorType(switch_detection_srv_->getArmorTarget());
 }
 
 void ChassisGimbalShooterManual::eRelease()
 {
   switch_armor_target_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_ALL);
   switch_armor_target_srv_->callService();
-  shooter_cmd_sender_->setArmorType(switch_armor_target_srv_->getArmorTarget());
+  switch_detection_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_ALL);
+  switch_detection_srv_->callService();
+  shooter_cmd_sender_->setArmorType(switch_detection_srv_->getArmorTarget());
 }
 
 void ChassisGimbalShooterManual::cPress()
