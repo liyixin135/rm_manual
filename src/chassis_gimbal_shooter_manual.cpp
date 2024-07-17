@@ -53,6 +53,8 @@ ChassisGimbalShooterManual::ChassisGimbalShooterManual(ros::NodeHandle& nh, ros:
   r_event_.setRising(boost::bind(&ChassisGimbalShooterManual::rPress, this));
   g_event_.setRising(boost::bind(&ChassisGimbalShooterManual::gPress, this));
   v_event_.setRising(boost::bind(&ChassisGimbalShooterManual::vPress, this));
+  f_event_.setEdge(boost::bind(&ChassisGimbalShooterManual::fPress, this),
+                   boost::bind(&ChassisGimbalShooterManual::fRelease, this));
   ctrl_f_event_.setRising(boost::bind(&ChassisGimbalShooterManual::ctrlFPress, this));
   ctrl_v_event_.setRising(boost::bind(&ChassisGimbalShooterManual::ctrlVPress, this));
   ctrl_b_event_.setRising(boost::bind(&ChassisGimbalShooterManual::ctrlBPress, this));
@@ -96,6 +98,7 @@ void ChassisGimbalShooterManual::checkKeyboard(const rm_msgs::DbusData::ConstPtr
   x_event_.update(dbus_data->key_x & !dbus_data->key_ctrl);
   r_event_.update((!dbus_data->key_ctrl) & dbus_data->key_r);
   v_event_.update((!dbus_data->key_ctrl) & dbus_data->key_v);
+  f_event_.update((!dbus_data->key_ctrl) & dbus_data->key_f);
   ctrl_f_event_.update(dbus_data->key_f & dbus_data->key_ctrl);
   ctrl_v_event_.update(dbus_data->key_ctrl & dbus_data->key_v);
   ctrl_b_event_.update(dbus_data->key_ctrl & dbus_data->key_b & !dbus_data->key_shift);
@@ -377,9 +380,6 @@ void ChassisGimbalShooterManual::ePress()
 {
   switch_armor_target_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_OUTPOST_BASE);
   switch_armor_target_srv_->callService();
-  switch_detection_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_OUTPOST_BASE);
-  std::string robot_color = robot_id_ >= 100 ? "blue" : "red";
-  switch_detection_srv_->setEnemyColor(robot_id_, robot_color);
   shooter_cmd_sender_->setArmorType(switch_armor_target_srv_->getArmorTarget());
 }
 
@@ -387,9 +387,22 @@ void ChassisGimbalShooterManual::eRelease()
 {
   switch_armor_target_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_ALL);
   switch_armor_target_srv_->callService();
+  shooter_cmd_sender_->setArmorType(switch_armor_target_srv_->getArmorTarget());
+}
+
+void ChassisGimbalShooterManual::fPress()
+{
+  ePress();
+  switch_detection_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_OUTPOST_BASE);
+  std::string robot_color = robot_id_ >= 100 ? "blue" : "red";
+  switch_detection_srv_->setEnemyColor(robot_id_, robot_color);
+}
+
+void ChassisGimbalShooterManual::fRelease()
+{
+  eRelease();
   switch_detection_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_ALL);
   switch_detection_srv_->callService();
-  shooter_cmd_sender_->setArmorType(switch_detection_srv_->getArmorTarget());
 }
 
 void ChassisGimbalShooterManual::cPress()
