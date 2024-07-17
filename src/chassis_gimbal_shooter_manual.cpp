@@ -31,6 +31,8 @@ ChassisGimbalShooterManual::ChassisGimbalShooterManual(ros::NodeHandle& nh, ros:
   switch_detection_srv_ = new rm_common::SwitchDetectionCaller(detection_switch_nh);
   ros::NodeHandle armor_target_switch_nh(nh, "armor_target_switch");
   switch_armor_target_srv_ = new rm_common::SwitchDetectionCaller(armor_target_switch_nh);
+  ros::NodeHandle base_switch_nh(nh, "base_switch");
+  switch_base_srv_ = new rm_common::SwitchDetectionCaller(base_switch_nh);
   XmlRpc::XmlRpcValue rpc_value;
   nh.getParam("shooter_calibration", rpc_value);
   shooter_calibration_ = new rm_common::CalibrationQueue(rpc_value, nh, controller_manager_);
@@ -81,6 +83,7 @@ void ChassisGimbalShooterManual::checkReferee()
   manual_to_referee_pub_data_.shoot_frequency = shooter_cmd_sender_->getShootFrequency();
   manual_to_referee_pub_data_.gimbal_eject = gimbal_cmd_sender_->getEject();
   manual_to_referee_pub_data_.det_armor_target = switch_armor_target_srv_->getArmorTarget();
+  manual_to_referee_pub_data_.det_armor_target = switch_base_srv_->getArmorTarget();
   manual_to_referee_pub_data_.det_color = switch_detection_srv_->getColor();
   manual_to_referee_pub_data_.det_exposure = switch_detection_srv_->getExposureLevel();
   manual_to_referee_pub_data_.stamp = ros::Time::now();
@@ -374,7 +377,8 @@ void ChassisGimbalShooterManual::mouseRightPress()
     gimbal_cmd_sender_->setMode(rm_msgs::GimbalCmd::TRACK);
     gimbal_cmd_sender_->setBulletSpeed(shooter_cmd_sender_->getSpeed());
   }
-  if (switch_armor_target_srv_->getArmorTarget() == rm_msgs::StatusChangeRequest::ARMOR_OUTPOST_BASE)
+  if (switch_armor_target_srv_->getArmorTarget() == rm_msgs::StatusChangeRequest::ARMOR_OUTPOST_BASE ||
+      switch_base_srv_->getArmorTarget() == rm_msgs::StatusChangeRequest::ARMOR_OUTPOST_BASE)
   {
     if (shooter_cmd_sender_->getMsg()->mode != rm_msgs::ShootCmd::STOP)
     {
@@ -401,16 +405,15 @@ void ChassisGimbalShooterManual::eRelease()
 void ChassisGimbalShooterManual::fPress()
 {
   ePress();
-  switch_detection_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_OUTPOST_BASE);
-  std::string robot_color = robot_id_ >= 100 ? "blue" : "red";
-  switch_detection_srv_->setEnemyColor(robot_id_, robot_color);
+  switch_base_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_OUTPOST_BASE);
+  switch_base_srv_->callService();
 }
 
 void ChassisGimbalShooterManual::fRelease()
 {
   eRelease();
-  switch_detection_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_ALL);
-  switch_detection_srv_->callService();
+  switch_base_srv_->setArmorTargetType(rm_msgs::StatusChangeRequest::ARMOR_ALL);
+  switch_base_srv_->callService();
 }
 
 void ChassisGimbalShooterManual::cPress()
