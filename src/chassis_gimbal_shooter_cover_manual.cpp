@@ -209,7 +209,7 @@ void ChassisGimbalShooterCoverManual::ePress()
   }
 }
 
-void ChassisGimbalShooterCoverManual::qPress()
+void ChassisGimbalShooterCoverManual::cPress()
 {
   setChassisMode(rm_msgs::ChassisCmd::RAW);
   chassis_cmd_sender_->power_limit_->updateState(rm_common::PowerLimit::BURST);

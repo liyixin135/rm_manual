@@ -86,14 +86,14 @@ protected:
   virtual void xPress();
   virtual void ePress();
   virtual void eRelease();
+  virtual void cPress();
   virtual void bPress();
   virtual void bRelease();
   virtual void xRelease();
   virtual void shiftPress();
   virtual void shiftRelease();
-  virtual void qPress();
-  virtual void cPress();
   void rPress();
+  void qPress();
   void qRelease()
   {
     shooter_cmd_sender_->setShootFrequency(rm_common::HeatLimit::LOW);

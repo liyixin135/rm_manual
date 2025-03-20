@@ -30,7 +30,7 @@ protected:
   void rightSwitchMidRise() override;
   void rightSwitchUpRise() override;
   void ePress() override;
-  void qPress() override;
+  void cPress() override;
   void zPress();
   void zRelease();
   void ctrlRPressing();
