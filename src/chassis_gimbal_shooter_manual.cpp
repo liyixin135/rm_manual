@@ -442,15 +442,13 @@ void ChassisGimbalShooterManual::eRelease()
 
 void ChassisGimbalShooterManual::cPress()
 {
-  if (is_gyro_)
-  {
-    setChassisMode(rm_msgs::ChassisCmd::FOLLOW);
-  }
-  else
-  {
     setChassisMode(rm_msgs::ChassisCmd::RAW);
     chassis_cmd_sender_->power_limit_->updateState(rm_common::PowerLimit::NORMAL);
-  }
+}
+
+void ChassisGimbalShooterManual::qPress()
+{
+    setChassisMode(rm_msgs::ChassisCmd::FOLLOW);
 }
 
 void ChassisGimbalShooterManual::bPress()
