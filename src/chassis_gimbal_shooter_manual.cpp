@@ -84,8 +84,6 @@ void ChassisGimbalShooterManual::run()
 void ChassisGimbalShooterManual::ecatReconnected()
 {
   ChassisGimbalManual::ecatReconnected();
-  shooter_calibration_->reset();
-  gimbal_calibration_->reset();
   up_change_position_ = false;
   low_change_position_ = false;
   need_change_position_ = false;
@@ -442,8 +440,8 @@ void ChassisGimbalShooterManual::eRelease()
 
 void ChassisGimbalShooterManual::cPress()
 {
-    setChassisMode(rm_msgs::ChassisCmd::RAW);
-    chassis_cmd_sender_->power_limit_->updateState(rm_common::PowerLimit::NORMAL);
+  setChassisMode(rm_msgs::ChassisCmd::RAW);
+  chassis_cmd_sender_->power_limit_->updateState(rm_common::PowerLimit::NORMAL);
 }
 
 void ChassisGimbalShooterManual::qPress()
