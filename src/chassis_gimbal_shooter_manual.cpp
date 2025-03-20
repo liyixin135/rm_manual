@@ -438,13 +438,13 @@ void ChassisGimbalShooterManual::eRelease()
   shooter_cmd_sender_->setArmorType(switch_armor_target_srv_->getArmorTarget());
 }
 
-void ChassisGimbalShooterManual::cPress()
+void ChassisGimbalShooterManual::qPress()
 {
   setChassisMode(rm_msgs::ChassisCmd::RAW);
   chassis_cmd_sender_->power_limit_->updateState(rm_common::PowerLimit::NORMAL);
 }
 
-void ChassisGimbalShooterManual::qPress()
+void ChassisGimbalShooterManual::cPress()
 {
     setChassisMode(rm_msgs::ChassisCmd::FOLLOW);
 }
